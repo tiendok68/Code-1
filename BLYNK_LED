@@ -1,0 +1,47 @@
+#define BLYNK_TEMPLATE_ID "TMPL6zKmeFdZ6"
+#define BLYNK_TEMPLATE_NAME "WIFI"
+#define BLYNK_AUTH_TOKEN "nCm7lqwzjmBr1LrN3H3mvUhn9V_rJW_Q"
+#include <Arduino.h>
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include <DHT.h>
+#include <Adafruit_Sensor.h>
+DHT HT(13, DHT11);
+const char* ssid = "Tien Do";
+const char* password = "16112005";
+const char* auth = "nCm7lqwzjmBr1LrN3H3mvUhn9V_rJW_Q";
+float humi;
+float temp;
+bool check_led = 0;
+BLYNK_WRITE(V0)                     //  ham nay duoc goi den khi Widget Vo thay doi trang thai
+{
+   int pinValue = param.asInt();       // gan gia tri cua chan V0 cho bien pinValue
+   
+   if (pinValue == 1) {
+   digitalWrite(23, HIGH);         // khi nhan nut gia tri pinValue bang 1, led sang
+   }
+   
+   else {
+   digitalWrite(23, LOW);        // khi nha nut gia tri pinValue bang 0, led tat
+   }
+}
+void setup() {
+  Serial.begin(9600);
+  
+  Blynk.begin(auth, ssid, password );
+  HT.begin();
+  pinMode(23, OUTPUT);
+}
+
+void loop() {
+  humi = HT.readHumidity();
+  temp = HT.readTemperature();
+  Serial.println(humi);
+  Serial.println(temp);
+  Blynk.virtualWrite(V1, humi);
+  Blynk.virtualWrite(V2, temp);
+  Blynk.run();   
+  delay(1000);
+  
+}
+
